@@ -18,6 +18,7 @@ defmodule RaffleyWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/rules", RuleController, :index
   end
 
   # Other scopes may use custom stacks.
