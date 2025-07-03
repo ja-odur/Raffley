@@ -14,19 +14,21 @@ defmodule RaffleyWeb.Router do
   pipeline :api do
     plug :accepts, ["json"]
   end
-  
+
   def spy(conn, _opts) do
     greeting = ~w(Hi Howdy Hello) |> Enum.random()
-    
+
     assign(conn, :greeting, greeting)
   end
 
   scope "/", RaffleyWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    # get "/", PageController, :home
     get "/rules", RuleController, :index
     get "/rules/:id", RuleController, :show
+
+    live "/", RaffleLive.Index
     live "/estimator", EstimatorLive
     live "/raffles", RaffleLive.Index
   end
