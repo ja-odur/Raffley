@@ -9,7 +9,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
   end
 
   def handle_params(%{"id" => id}, _uri, socket) do
-    raffle = Raffles.get_raffle(id)
+    raffle = Raffles.get_raffle!(id)
 
     socket =
       socket
@@ -55,7 +55,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
       <ul class="raffles">
         <li :for={raffle <- @raffles}>
           <.link navigate={~p"/raffles/#{raffle}"}>
-            <img src={raffle.image_path} />
+            <img src={raffle.image_path} /> {raffle.prize}
           </.link>
         </li>
       </ul>
