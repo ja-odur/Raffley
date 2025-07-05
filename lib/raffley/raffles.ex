@@ -1,9 +1,46 @@
 defmodule Raffley.Raffles do
   alias Raffley.Raffles.Raffle
   alias Raffley.Repo
-  
+  import Ecto.Query
+
   def list_raffles do
     Repo.all(Raffle)
+  end
+
+  def filter_raffles(filter) do
+    Raffle
+    |> with_status(filter["status"])
+    |> search_by(filter["q"])
+    |> sort(filter["sort_by"])
+    |> Repo.all()
+  end
+
+  defp with_status(query, status) when status in ~w(open closed upcoming) do
+    query |> where(status: ^status)
+  end
+
+  defp with_status(query, _status), do: query
+
+  defp search_by(query, q) when q in ["", nil], do: query
+
+  defp search_by(query, q) do
+    query |> where([r], ilike(r.prize, ^"%#{q}%"))
+  end
+
+  defp sort(query, "prize") do
+    query |> order_by(:prize)
+  end
+
+  defp sort(query, "ticket_price_desc") do
+    query |> order_by(desc: :ticket_price)
+  end
+
+  defp sort(query, "ticket_price_asc") do
+    query |> order_by(asc: :ticket_price)
+  end
+
+  defp sort(query, _sort_by) do
+    query |> order_by(:id)
   end
 
   def get_raffle!(id) do
