@@ -3,11 +3,11 @@ defmodule Raffley.Raffles.Raffle do
   import Ecto.Changeset
 
   schema "raffles" do
-    field :status, Ecto.Enum, values: [:upcoming, :open, :closed]
+    field :status, Ecto.Enum, values: [:upcoming, :open, :closed], dafault: :upcoming
     field :description, :string
     field :prize, :string
-    field :ticket_price, :integer
-    field :image_path, :string
+    field :ticket_price, :integer, default: 1
+    field :image_path, :string, default: "/images/placeholder.jpg"
 
     timestamps(type: :utc_datetime)
   end
