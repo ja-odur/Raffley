@@ -68,6 +68,10 @@ defmodule RaffleyWeb.RaffleLive.Index do
           "Price: Low to High": "ticket_price_asc"
         ]}
       />
+
+      <.link navigate={~p"/raffles"}>
+        Reset
+      </.link>
     </.form>
     """
   end
