@@ -6,11 +6,6 @@ defmodule RaffleyWeb.RaffleLive.Index do
   import RaffleyWeb.CustomComponents
 
   def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> stream(:raffles, Raffles.list_raffles())
-      |> assign(:form, to_form(%{}))
-
     # IO.inspect(socket.assigns.streams.raffles, label: "MOUNT")
 
     # socket =
@@ -20,6 +15,15 @@ defmodule RaffleyWeb.RaffleLive.Index do
     #   end)
 
     {:ok, socket}
+  end
+
+  def handle_params(params, _uri, socket) do
+    socket =
+      socket
+      |> stream(:raffles, Raffles.filter_raffles(params))
+      |> assign(:form, to_form(params))
+
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -89,10 +93,12 @@ defmodule RaffleyWeb.RaffleLive.Index do
   end
 
   def handle_event("filter", params, socket) do
-    socket =
-      socket
-      |> assign(:form, to_form(params))
-      |> stream(:raffles, Raffles.filter_raffles(params), reset: true)
+    params =
+      params
+      |> Map.take(~w(q status sort_by))
+      |> Map.reject(fn {_, v} -> v == "" end)
+
+    socket = push_navigate(socket, to: ~p"/raffles?#{params}")
 
     {:noreply, socket}
   end
