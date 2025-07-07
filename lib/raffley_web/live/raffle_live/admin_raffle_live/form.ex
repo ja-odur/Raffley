@@ -43,4 +43,20 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     </.back>
     """
   end
+
+  def handle_event("save", %{"raffle" => raffle_params}, socket) do
+    case Admin.create_raffle(raffle_params) do
+      {:ok, _raffle} ->
+        socket =
+          socket
+          |> put_flash(:info, "Raffle created successfully!")
+          |> push_navigate(to: ~p"/admin/raffles")
+
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        socket = assign(socket, :form, to_form(changeset))
+        {:noreply, socket}
+    end
+  end
 end
