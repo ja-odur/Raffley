@@ -48,6 +48,10 @@ defmodule Raffley.Raffles do
   end
 
   def featured_raffles(%Raffle{} = raffle) do
+    # Simulate two second deplay to test async loading
+    # on the UI
+    Process.sleep(2000)
+
     Raffle
     |> where(status: :open)
     |> where([r], r.id != ^raffle.id)
