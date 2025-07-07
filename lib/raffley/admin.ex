@@ -18,4 +18,8 @@ defmodule Raffley.Admin do
   def change_raffle(%Raffle{} = raffle, attrs \\ %{}) do
     Raffle.changeset(raffle, attrs)
   end
+  
+  def get_raffle!(id) do
+    Repo.get!(Raffle, id)
+  end
 end
