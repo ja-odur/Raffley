@@ -16,7 +16,20 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
   def render(assigns) do
     ~H"""
     <div class="admin-index">
-      <.header>
+      <.button phx-click={
+        JS.toggle(
+          to: "#joke",
+          in: {"ease-in-out duration-300", "opacity-0", "opacity-100"},
+          out: {"ease-in-out duration-300", "opacity-100", "opacity-0"},
+          time: 300
+        )
+      }>
+        Toggle Joke
+      </.button>
+      <div id="joke" class="joke hidden">
+        What's a tree's favorite drink?
+      </div>
+      <.header class="mt-6">
         {@page_title}
         <:actions>
           <.link navigate={~p"/admin/raffles/new"} class="button">
@@ -41,8 +54,11 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
             Edit
           </.link>
         </:action>
-        <:action :let={{_dom_id, raffle}}>
-          <.link phx-click="delete" phx-value-id={raffle.id} data-confirm="Are you sure?">
+        <:action :let={{dom_id, raffle}}>
+          <%!-- <.link phx-click="delete" phx-value-id={raffle.id} data-confirm="Are you sure?">
+            Delete
+          </.link> --%>
+          <.link phx-click={delete_and_hide(dom_id, raffle)} data-confirm="Are you sure?">
             Delete
           </.link>
         </:action>
@@ -56,5 +72,10 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
     {:ok, _raffle} = Admin.delete_raffle(raffle)
 
     {:noreply, stream_delete(socket, :raffles, raffle)}
+  end
+
+  def delete_and_hide(dom_id, raffle) do
+    JS.push("delete", value: %{id: raffle.id})
+    |> JS.hide(to: "##{dom_id}", transition: "fade-out")
   end
 end
