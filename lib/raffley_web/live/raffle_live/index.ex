@@ -69,7 +69,8 @@ defmodule RaffleyWeb.RaffleLive.Index do
         options={[
           Prize: "prize",
           "Price: High to Low": "ticket_price_desc",
-          "Price: Low to High": "ticket_price_asc"
+          "Price: Low to High": "ticket_price_asc",
+          Charity: "charity"
         ]}
       />
 

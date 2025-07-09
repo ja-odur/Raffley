@@ -55,6 +55,12 @@ defmodule Raffley.Raffles do
     query |> order_by(asc: :ticket_price)
   end
 
+  defp sort(query, "charity") do
+    from r in query,
+      join: c in assoc(r, :charity),
+      order_by: c.name
+  end
+
   defp sort(query, _sort_by) do
     query |> order_by(:id)
   end
