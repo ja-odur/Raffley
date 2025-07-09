@@ -40,14 +40,17 @@ defmodule RaffleyWeb.Router do
   scope "/", RaffleyWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live "/admin/raffles", AdminRaffleLive.Index
-    live "/admin/raffles/new", AdminRaffleLive.Form, :new
-    live "/admin/raffles/:id/edit", AdminRaffleLive.Form, :edit
+    live_session :admin,
+      on_mount: {RaffleyWeb.UserAuth, :ensure_authenticated} do
+      live "/admin/raffles", AdminRaffleLive.Index
+      live "/admin/raffles/new", AdminRaffleLive.Form, :new
+      live "/admin/raffles/:id/edit", AdminRaffleLive.Form, :edit
 
-    live "/charities", CharityLive.Index, :index
-    live "/charities/new", CharityLive.Form, :new
-    live "/charities/:id", CharityLive.Show, :show
-    live "/charities/:id/edit", CharityLive.Form, :edit
+      live "/charities", CharityLive.Index, :index
+      live "/charities/new", CharityLive.Form, :new
+      live "/charities/:id", CharityLive.Show, :show
+      live "/charities/:id/edit", CharityLive.Form, :edit
+    end
   end
 
   # Other scopes may use custom stacks.
