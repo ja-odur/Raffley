@@ -44,9 +44,12 @@ defmodule RaffleyWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", RaffleyWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", RaffleyWeb.Api do
+    pipe_through :api
+
+    get "/raffles", RaffleController, :index
+    get "/raffles/:id", RaffleController, :show
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:raffley, :dev_routes) do
