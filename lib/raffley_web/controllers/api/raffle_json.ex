@@ -7,7 +7,13 @@ defmodule RaffleyWeb.Api.RaffleJSON do
     %{raffle: data(raffle)}
   end
 
-  def data(raffle) do
+  def error(%{changeset: changeset}) do
+    errors = Ecto.Changeset.traverse_errors(changeset, fn {msg, _options} -> msg end)
+
+    %{errors: errors}
+  end
+
+  defp data(raffle) do
     %{
       id: raffle.id,
       prize: raffle.prize,

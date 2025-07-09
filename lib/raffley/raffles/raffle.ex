@@ -3,7 +3,7 @@ defmodule Raffley.Raffles.Raffle do
   import Ecto.Changeset
 
   schema "raffles" do
-    field :status, Ecto.Enum, values: [:upcoming, :open, :closed], dafault: :upcoming
+    field :status, Ecto.Enum, values: [:upcoming, :open, :closed], default: :upcoming
     field :description, :string
     field :prize, :string
     field :ticket_price, :integer, default: 1
