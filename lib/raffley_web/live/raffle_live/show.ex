@@ -159,7 +159,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
     %{raffle: raffle, current_user: user} = socket.assigns
 
     case Tickets.create_ticket(raffle, user, ticket_params) do
-      {:ok, ticket} ->
+      {:ok, _ticket} ->
         changeset = Tickets.change_ticket(%Ticket{})
 
         socket =
@@ -182,5 +182,9 @@ defmodule RaffleyWeb.RaffleLive.Show do
       |> update(:ticket_sum, &(&1 + ticket.price))
 
     {:noreply, socket}
+  end
+
+  def handle_info({:raffle_updated, raffle}, socket) do
+    {:noreply, assign(socket, :raffle, raffle)}
   end
 end
