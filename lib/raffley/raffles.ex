@@ -69,6 +69,14 @@ defmodule Raffley.Raffles do
     |> Repo.preload(:charity)
   end
 
+  def list_tickets(raffle) do
+    raffle
+    |> Ecto.assoc(:tickets)
+    |> preload(:user)
+    |> order_by(desc: :inserted_at)
+    |> Repo.all()
+  end
+
   def featured_raffles(%Raffle{} = raffle) do
     # Simulate two second deplay to test async loading
     # on the UI

@@ -19,9 +19,12 @@ defmodule RaffleyWeb.RaffleLive.Show do
   def handle_params(%{"id" => id}, _uri, socket) do
     raffle = Raffles.get_raffle!(id)
 
+    tickets = Raffles.list_tickets(raffle)
+
     socket =
       socket
       |> assign(:raffle, raffle)
+      |> stream(:tickets, tickets)
       |> assign(:page_title, raffle.prize)
       # The non async assign that blocks the entire liveview page from rendering on the UI
       # |> assign(:featured_raffles, Raffles.featured_raffles(raffle))
@@ -71,6 +74,9 @@ defmodule RaffleyWeb.RaffleLive.Show do
               </.link>
             <% end %>
           </div>
+          <div id="tickets" phx-update="stream">
+            <.ticket :for={{dom_id, ticket} <- @streams.tickets} ticket={ticket} id={dom_id} />
+          </div>
         </div>
         <div class="right">
           <.featured_raffles raffles={@featured_raffles} />
@@ -107,6 +113,31 @@ defmodule RaffleyWeb.RaffleLive.Show do
     """
   end
 
+  attr :id, :string, required: true
+  attr :ticket, Ticket, required: true
+
+  def ticket(assigns) do
+    ~H"""
+    <div class="ticket" id={@id}>
+      <span class="timeline"></span>
+      <section>
+        <div class="price-paid">
+          ${@ticket.price}
+        </div>
+        <div>
+          <span class="username">
+            {@ticket.user.username}
+          </span>
+          bought a ticket
+          <blockquote>
+            {@ticket.comment}
+          </blockquote>
+        </div>
+      </section>
+    </div>
+    """
+  end
+
   def handle_event("validate", %{"ticket" => ticket_params}, socket) do
     changeset = Tickets.change_ticket(%Ticket{}, ticket_params)
 
@@ -119,9 +150,14 @@ defmodule RaffleyWeb.RaffleLive.Show do
     %{raffle: raffle, current_user: user} = socket.assigns
 
     case Tickets.create_ticket(raffle, user, ticket_params) do
-      {:ok, _ticket} ->
+      {:ok, ticket} ->
         changeset = Tickets.change_ticket(%Ticket{})
-        socket = assign(socket, :form, to_form(changeset))
+
+        socket =
+          socket
+          |> assign(:form, to_form(changeset))
+          |> stream_insert(:tickets, ticket, at: 0)
+
         {:noreply, socket}
 
       {:error, changeset} ->
