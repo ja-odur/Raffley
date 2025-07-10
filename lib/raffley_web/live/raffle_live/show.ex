@@ -25,6 +25,8 @@ defmodule RaffleyWeb.RaffleLive.Show do
       socket
       |> assign(:raffle, raffle)
       |> stream(:tickets, tickets)
+      |> assign(:ticket_count, Enum.count(tickets))
+      |> assign(:ticket_sum, Enum.map(tickets, fn t -> t.price end) |> Enum.sum())
       |> assign(:page_title, raffle.prize)
       # The non async assign that blocks the entire liveview page from rendering on the UI
       # |> assign(:featured_raffles, Raffles.featured_raffles(raffle))
@@ -53,6 +55,9 @@ defmodule RaffleyWeb.RaffleLive.Show do
               ${@raffle.ticket_price} / ticket
             </div>
           </header>
+          <div class="totals">
+            {@ticket_count} Tickets Sold &bull; ${@ticket_sum} Raised
+          </div>
           <div class="description">
             {@raffle.description}
           </div>
@@ -157,6 +162,8 @@ defmodule RaffleyWeb.RaffleLive.Show do
           socket
           |> assign(:form, to_form(changeset))
           |> stream_insert(:tickets, ticket, at: 0)
+          |> update(:ticket_count, &(&1 + 1))
+          |> update(:ticket_sum, &(&1 + ticket.price))
 
         {:noreply, socket}
 
